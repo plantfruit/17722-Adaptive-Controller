@@ -11,88 +11,20 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import cross_val_predict, cross_val_score
 
 # FILENAMES
-# Old data, 3 x 3 grid. Each microphone was recorded separately
-mic1_1 = 'Data/trimic1_1.txt'
-mic1_2 = 'Data/trimic1_2.txt'
-mic1_3 = 'Data/trimic1_3.txt'
-grid9_5samples = 'Data/bal2labels.txt'
-
-# 5 x 5 grid
-# Each row is a pulse FFT
-# Rows are grouped sequentially by the file they were extracted from
-# e.g. 20 rows were from the same file 
-trimic1 = 'Data/5by5_trimic1.txt' # 20 pulses per file
-trimic1duplicate = 'Data/5by5_trimic1_possibleduplicate.txt'
-trimic1labels = 'Data/5by5_trimic1_labels.txt'
-trimic1re = 'Data/5x5_trimic1_re.txt' # Only 10 pulses per file
-trimic1relabels = 'Data/5by5_trimic1_re_labels.txt'
-trimic1_1 = 'Data/5x5_trimic1_1.txt' # Individual microphones' rows
-trimic1_2 = 'Data/5x5_trimic1_2.txt'
-trimic1_3 = 'Data/5x5_trimic1_3.txt'
-trimic1_1and2 = 'Data/5x5_trimic1_1and2.txt' # Remove 1 microphone from the row
-trimic1_2and3 = 'Data/5x5_trimic1_2and3.txt'
-trimic1_1and3 = 'Data/5x5_trimic1_1and3.txt'
-trimic1_1pulse = 'Data/5x5_trimic1_onepulse.txt' # Extract 1 pulse instead of 10 pulses
-trimic1_1pulse_labels = 'Data/5x5_trimic1_onepulse_labels.txt'
-
-miscobj1 = 'Data/miscobj3.txt'
-miscobj1labels = 'Data/miscobj3_labels.txt'
-
-# Small array with 3 labels, and 3 "pulses per file," that is used to test the grouping function
-groupingTest = 'Data/groupsorttest_features.txt'
-groupingTestLabels = 'Data/groupsorttest_labels.txt'
-
-# 3x3 grid, pulse FFTs
-g3x3_trimic1 = 'Data/3x3_trimic1.txt' # 15 files per label, groups of 5 trials that are "soft, "medium," and "hard" press
-g3x3_trimic1_labels = 'Data/3x3_trimic1_labels.txt'
-
-# Regression trials (straight lines)
-# Full FFT spectrum
-regY1_1 = 'Data/5x5_regY_1.txt'
-regY1_2 = 'Data/5x5_regY_2.txt'
-regY1_3 = 'Data/5x5_regY_3.txt'
-# New balloon, hard force (full FFT spectrum)
-regX2_1 = 'Data/5x5_2_regX_1.txt'
-regX2_2 = 'Data/5x5_2_regX_2.txt'
-regX2_3 = 'Data/5x5_2_regX_3.txt'
-regY2_1 = 'Data/5x5_2_regY_1.txt'
-regY2_2 = 'Data/5x5_2_regY_2.txt'
-regY2_3 = 'Data/5x5_2_regY_3.txt'
-regX1_10points_0_3mm = 'Data/regression_10point_0_3res.txt' # Label file
-reg_10points_integer = 'Data/regression_10point_integer.txt'
-regX1_1_cols57to75 = 'Data/5x5_2_regX_1_cols57to75.txt'
-regX1_1_col67 = 'Data/5x5_2_regX_1_col67.txt'
-
-# 1D tube, gripper arm, 6 objects
-D1_6obj2 = 'Final Data/1D_6obj2.txt'
-D1_6obj2_labels = 'Final Data/1Dtube_6obj2_labels.txt'
-D1_6obj2_lessSmooth = 'Final Data/1D_6obj2_smooth3.txt'
-D1_6obj2_v3 = 'Final Data/1D_6obj2_smooth1_wind.txt' # Reduced smoothing factor to 1, windowed 2.5 to 15 kHz
-# 1 to 9 cm, at 0.5 cm resolution
-tube1D_res05 = 'Data/1Dtube_05res.txt'
-tube1D_res05_labels = 'Data/1Dtube_05res_labels.txt'
-
-BGwhite_vol1 = 'Data/BGwhite_vol1.txt'
-BGwhite_vol2 = 'Data/BGwhite_vol2.txt'
-BGwhite_vol3 = 'Data/BGwhite_vol3.txt'
-grid3x3_labels  = 'Data/3x3_labels.txt'
-
-# 3x3 grid, 18-20 kHz, linear chirp and exponential chirp
-chirpLin = 'Final Data/ChirpLin.txt'
-chirpExp = 'Final Data/ChirpExp.txt'
-standard3x3_labels = 'Final Data/3x3_labels.txt'
+dir5_1 = "ML Data/dir5_1.txt"
+dir5_1_labels = "ML Data/dir5_1_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = chirpExp
+fileName = dir5_1
 
-labelFileName = standard3x3_labels
+labelFileName = dir5_1_labels
 
-testFileName = trimic1_3
+#testFileName = trimic1_3
  
-testLabelFileName = trimic1relabels
+#testLabelFileName = trimic1relabels
 
 # PARAMETERS
-num_labels = 9
+num_labels = 5
 files_per_label = 10
 rows_per_file = 10 
 total_files = num_labels * files_per_label
