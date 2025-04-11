@@ -27,8 +27,6 @@ labelFileName = dir5_1_labels
 num_labels = 5
 files_per_label = 10
 rows_per_file = 10 
-total_files = num_labels * files_per_label
-total_rows = total_files * rows_per_file # Unused
 kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-test split
 kFoldNum = 5
 internalSplit = True
@@ -37,11 +35,11 @@ floatLabel = False
 labelFontsize = 32
 textFontsize = 26 #26
 
-# Train-test split: First 80 rows/train, last 20 rows/test per label
 train_indices = []
 test_indices = []
+total_files = num_labels * files_per_label
 
-# Read features and labels
+# Read features and labels from file
 X = np.loadtxt(fileName)
 #print(np.shape(X))
 if (stringLabel):
@@ -51,13 +49,11 @@ elif (floatLabel):
 else:
     y = np.loadtxt(labelFileName)
 
+# Reshape 1 column/1 row files 
 if X.ndim == 1:
     X_reshaped = X.reshape(-1, 1)
 else:
     X_reshaped = X
-
-groups_per_label = 3
-files_per_group = 5
 
 if (not(kFoldOrNot)):
     for label in range(1, num_labels + 1):
@@ -65,51 +61,9 @@ if (not(kFoldOrNot)):
         label_rows = np.where(y == label)[0]
         #np.where(y == label, 1)[0]
 
-        # These next 2 blocks do the same thing (3x3 grid, varying force, classification)
-        
-        # Iterate over each group of 5 files
-    ##    for group in range(groups_per_label):
-    ##        # Start index of this group
-    ##        group_start = group * files_per_group * rows_per_file
-    ##
-    ##        # Indices for this group
-    ##        group_indices = label_rows[group_start:group_start + files_per_group * rows_per_file]
-    ##
-    ##        # First 4 files (40 rows) for training
-    ##        train_indices.extend(group_indices[:4 * rows_per_file])
-    ##
-    ##        # Last file (10 rows) for testing
-    ##        test_indices.extend(group_indices[4 * rows_per_file:])
-
-    ##    train_indices.extend(label_rows[:40])
-    ##    train_indices.extend(label_rows[50:90])
-    ##    train_indices.extend(label_rows[100:140])
-    ##    test_indices.extend(label_rows[40:50])
-    ##    test_indices.extend(label_rows[90:100])
-    ##    test_indices.extend(label_rows[140:150])
-        
         # Split the indices: first 80 for training, last 20 for testing
-        #train_indices.extend(label_rows[:80])
-        #test_indices.extend(label_rows[80:])
-
-        # Reversed order
-        train_indices.extend(label_rows[50:])
-        test_indices.extend(label_rows[:50])
-        
-        # Split the indices: 
-        # First 20 rows and last 60 rows for training
-        #train_indices.extend(label_rows[:50])
-        #train_indices.extend(label_rows[100:])
-        # 2nd set of 20 rows for testing
-        #test_indices.extend(label_rows[50:100])
-
-        # Split the indices: 
-        # First 20 rows and last 60 rows for testing
-        #test_indices.extend(label_rows[:50])
-        #test_indices.extend(label_rows[100:])
-        # 2nd set of 20 rows for training
-        #train_indices.extend(label_rows[50:100])
-
+        train_indices.extend(label_rows[:80])
+        test_indices.extend(label_rows[80:])
 
     # Convert to arrays for indexing
     train_indices = np.array(train_indices)
@@ -122,32 +76,30 @@ if (not(kFoldOrNot)):
     y_train, y_test = y[train_indices], y[test_indices]
 
 # Train the SVM model
+model = SVC(kernel='linear')
 #model = XGBClassifier()
 #model = GaussianNB()
 #model = KNeighborsClassifier(n_neighbors=5)
 #model = DecisionTreeClassifier()
 #model = RandomForestClassifier(n_estimators=100)
-model = SVC(kernel='linear')  # You can change kernel here (e.g., 'rbf', 'poly')
 
+
+# Perform 5-fold cross-validation
 if (kFoldOrNot):
-    # Perform cross-validation and get predictions for each sample
     y_pred = cross_val_predict(model, X_reshaped, y, cv=kFoldNum)
 
-    # Print predictions and true labels for each sample
-    #for i in range(len(y_pred)):
-    #    print(f"Sample {i+1} - Predicted: {y_pred[i]}, True: {y[i]}")
-
-    # Perform 5-fold cross-validation
     accuracy = accuracy_score(y, y_pred)
     cv_scores = cross_val_score(model, X_reshaped, y, cv=kFoldNum)
     print(cv_scores)
     print(np.mean(cv_scores))
 else:
+    # Test-train within the same dataset
     if (internalSplit):
         model.fit(X_train, y_train)
 
         # Make predictions on the test set
         y_pred = model.predict(X_test)
+    # Train with one dataset and test with another dataset
     else:
         X_train = np.loadtxt(fileName)
         y_train = np.loadtxt(labelFileName)
