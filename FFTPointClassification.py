@@ -9,6 +9,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 from sklearn.model_selection import cross_val_predict, cross_val_score
+import tensorflow as tf
+from sklearn.datasets import make_classification
+from skl2onnx import convert_sklearn
+from skl2onnx.common.data_types import FloatTensorType
 
 # FILENAMES
 dir5_1 = "ML Data/dir5_1.txt"
@@ -16,22 +20,21 @@ dir5_1_labels = "ML Data/dir5_1_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
 fileName = dir5_1
-
 labelFileName = dir5_1_labels
 
 #testFileName = trimic1_3
- 
 #testLabelFileName = trimic1relabels
 
 # PARAMETERS
 num_labels = 5
 files_per_label = 10
 rows_per_file = 10 
-kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-test split
+kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
 kFoldNum = 5
 internalSplit = True
 stringLabel = False # False - Numerical labels
-floatLabel = False 
+floatLabel = False
+convertToTensor = True
 labelFontsize = 32
 textFontsize = 26 #26
 
@@ -68,8 +71,8 @@ if (not(kFoldOrNot)):
     # Convert to arrays for indexing
     train_indices = np.array(train_indices)
     test_indices = np.array(test_indices)
-    print(train_indices)
-    print(test_indices)
+    #print(train_indices)
+    #print(test_indices)
 
     # Split the dataset
     X_train, X_test = X_reshaped[train_indices], X_reshaped[test_indices]
@@ -82,7 +85,6 @@ model = SVC(kernel='linear')
 #model = KNeighborsClassifier(n_neighbors=5)
 #model = DecisionTreeClassifier()
 #model = RandomForestClassifier(n_estimators=100)
-
 
 # Perform 5-fold cross-validation
 if (kFoldOrNot):
@@ -123,6 +125,37 @@ if (kFoldOrNot):
     cm = confusion_matrix(y, y_pred, labels=all_labels)
 else:
     cm = confusion_matrix(y_test, y_pred, labels=all_labels)
+
+if (convertToTensor):
+    W = model.coef_.flatten()  # shape: (150,)
+    b = model.intercept_[0]
+
+    # Save weights and bias
+    #np.savez('svm_model.npz', W=W, b=b)
+
+    # Build a single-layer linear classifier
+    model = tf.keras.Sequential([
+        tf.keras.layers.Input(shape=(150,)),
+        tf.keras.layers.Dense(1, activation=None)  # Linear output
+    ])
+
+    # Use Hinge Loss for SVM-style training
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+        loss=tf.keras.losses.Hinge(),
+        metrics=['accuracy']
+    )
+
+    # Train your model
+    model.fit(X_train, y_train, epochs=50, batch_size=16, validation_split=0.2)
+
+    # Predict the raw scores (logits)
+    logits = model.predict(X_test)
+
+    # Convert to class: +1 or -1
+    y_pred = np.where(logits >= 0, 1, -1)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(accuracy)
 
 # Visualize the confusion matrix
 fig = plt.figure(figsize=(12, 9))
