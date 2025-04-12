@@ -34,7 +34,7 @@ kFoldNum = 5
 internalSplit = True
 stringLabel = False # False - Numerical labels
 floatLabel = False
-convertToTensor = True
+convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 labelFontsize = 32
 textFontsize = 26 #26
 
@@ -126,37 +126,15 @@ if (kFoldOrNot):
 else:
     cm = confusion_matrix(y_test, y_pred, labels=all_labels)
 
-if (convertToTensor):
-    W = model.coef_.flatten()  # shape: (150,)
-    b = model.intercept_[0]
+if (convertModel):
+    # Export to ONNX
+    initial_type = [('input', FloatTensorType([None, 150]))]  # match your vector length
+    onnx_model = convert_sklearn(model, initial_types=initial_type)
 
-    # Save weights and bias
-    #np.savez('svm_model.npz', W=W, b=b)
-
-    # Build a single-layer linear classifier
-    model = tf.keras.Sequential([
-        tf.keras.layers.Input(shape=(150,)),
-        tf.keras.layers.Dense(1, activation=None)  # Linear output
-    ])
-
-    # Use Hinge Loss for SVM-style training
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-        loss=tf.keras.losses.Hinge(),
-        metrics=['accuracy']
-    )
-
-    # Train your model
-    model.fit(X_train, y_train, epochs=50, batch_size=16, validation_split=0.2)
-
-    # Predict the raw scores (logits)
-    logits = model.predict(X_test)
-
-    # Convert to class: +1 or -1
-    y_pred = np.where(logits >= 0, 1, -1)
-    accuracy = accuracy_score(y_test, y_pred)
-    print(accuracy)
-
+    # Save to file
+    with open("svm_model.onnx", "wb") as f:
+        f.write(onnx_model.SerializeToString())
+    
 # Visualize the confusion matrix
 fig = plt.figure(figsize=(12, 9))
 ax = sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=all_labels, yticklabels=all_labels,
