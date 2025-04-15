@@ -137,7 +137,8 @@ def predict_with_onnxruntime(onx, X):
     return res[0]
 
 if (convertModel):
-    # 
+    # Code taken from documentation
+    # Convert scikit-learn model to ONNX format
     onnx_model = to_onnx(model, X.astype(np.float32), target_opset = 12)
     #ONNX verification
     y_pred = predict_with_onnxruntime(onnx_model, X_test)
