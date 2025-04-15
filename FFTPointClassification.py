@@ -13,6 +13,10 @@ import tensorflow as tf
 from sklearn.datasets import make_classification
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
+from skl2onnx import convert_sklearn, to_onnx, wrap_as_onnx_mixin
+from onnxruntime import InferenceSession
+from skl2onnx.algebra.onnx_ops import OnnxSub, OnnxDiv
+from skl2onnx.algebra.onnx_operator_mixin import OnnxOperatorMixin
 
 # FILENAMES
 dir5_1 = "ML Data/dir5_1.txt"
@@ -126,10 +130,23 @@ if (kFoldOrNot):
 else:
     cm = confusion_matrix(y_test, y_pred, labels=all_labels)
 
+def predict_with_onnxruntime(onx, X):
+    sess = InferenceSession(onx.SerializeToString(), providers=["CPUExecutionProvider"])
+    input_name = sess.get_inputs()[0].name
+    res = sess.run(None, {input_name: X.astype(np.float32)})
+    return res[0]
+
 if (convertModel):
+    # 
+    onnx_model = to_onnx(model, X.astype(np.float32), target_opset = 12)
+    #ONNX verification
+    y_pred = predict_with_onnxruntime(onnx_model, X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(accuracy)
+
     # Export to ONNX
-    initial_type = [('input', FloatTensorType([None, 150]))]  # match your vector length
-    onnx_model = convert_sklearn(model, initial_types=initial_type)
+    #initial_type = [('input', FloatTensorType([None, 150]))]  # match your vector length
+    #onnx_model = convert_sklearn(model, initial_types=initial_type)
 
     # Save to file
     with open("svm_model.onnx", "wb") as f:
