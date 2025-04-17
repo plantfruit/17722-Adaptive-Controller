@@ -21,10 +21,12 @@ from skl2onnx.algebra.onnx_operator_mixin import OnnxOperatorMixin
 # FILENAMES
 dir5_1 = "ML Data/dir5_1.txt"
 dir5_1_labels = "ML Data/dir5_1_labels.txt"
+dir5_2 = "ML Data/dir5_2.txt"
+dir5_2_labels = "ML Data/dir5_2_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir5_1
-labelFileName = dir5_1_labels
+fileName = dir5_2
+labelFileName = dir5_2_labels
 
 #testFileName = trimic1_3
 #testLabelFileName = trimic1relabels
@@ -32,7 +34,7 @@ labelFileName = dir5_1_labels
 # PARAMETERS
 num_labels = 5
 files_per_label = 10
-rows_per_file = 10 
+rows_per_file = 1
 kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
 kFoldNum = 5
 internalSplit = True
@@ -69,8 +71,8 @@ if (not(kFoldOrNot)):
         #np.where(y == label, 1)[0]
 
         # Split the indices: first 80 for training, last 20 for testing
-        train_indices.extend(label_rows[:80])
-        test_indices.extend(label_rows[80:])
+        train_indices.extend(label_rows[:9])
+        test_indices.extend(label_rows[9:])
 
     # Convert to arrays for indexing
     train_indices = np.array(train_indices)
