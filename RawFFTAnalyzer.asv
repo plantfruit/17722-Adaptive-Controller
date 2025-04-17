@@ -1,0 +1,6 @@
+% Folder Names
+fftTest1 = "Mic Data/Apr 17 Phone FFT Test";
+
+
+folderPath = fftTest1;
+
