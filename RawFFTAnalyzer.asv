@@ -13,6 +13,13 @@ Fs = 48e3;
 
 % Parameters
 fftWindow = [81 1601];
+fftLen = 152;
+subDims = [5 10];
+
+% Switches
+doPlotting = true;
+doSubplots = true;
+showWindowed = true;
 
 % Select folder to analyze
 folderPath = d5_1;
@@ -24,7 +31,7 @@ fileNames = files;
 % Processing
 %========================================================================
 
-
+allFFTs = zeros(length(fileNames), 152);
 
 % Read every file in the folder
 for k = 1:length(fileNames)
@@ -33,12 +40,26 @@ for k = 1:length(fileNames)
     % y-vector
     fftData = readmatrix(fileName);
 
+    allFFTs(k,:) = fftData;
+
     % x-vector
     f = linspace(0,Fs, length(fftData));
 
-
-    figure
-    plot(fftData)
+    if (doPlotting)
+        if (doSubplots)
+            subplot(subDims(1), subDims(2), k)
+        else
+            figure
+        end
+        
+        if (showWindowed) 
+            plot(fftData)
+        else
+            windowedFFT = fftData((fftWindow(1):fftWindow(2)));
+            plot(f(fftWindow(1):fftWindow(2)), windowedFFT);
+            xlabel()
+        end
+    end
     % plot(f, fftData)
 
     % subplot(1,2,1)

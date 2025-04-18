@@ -12,11 +12,14 @@ d5_1 = 'Mic Data/Apr 17 D Pad 5';
 Fs = 48e3;
 
 % Parameters
-fftWindow = [81 1601];
+fftWindow = [48 150]; %[81 1601];
 fftLen = 152;
+subDims = [5 10];
 
 % Switches
-doPlotting = false;
+doPlotting = true;
+doSubplots = true;
+showWindowed = false;
 
 % Select folder to analyze
 folderPath = d5_1;
@@ -37,14 +40,26 @@ for k = 1:length(fileNames)
     % y-vector
     fftData = readmatrix(fileName);
 
+    % fftData = smooth(fftData, 3);
+
     allFFTs(k,:) = fftData;
 
     % x-vector
     f = linspace(0,Fs, length(fftData));
 
     if (doPlotting)
-        figure
-        plot(fftData)
+        if (doSubplots)
+            subplot(subDims(1), subDims(2), k)
+        else
+            figure
+        end
+        
+        if (showWindowed) 
+            windowedFFT = fftData((fftWindow(1):fftWindow(2)));
+            plot(f(fftWindow(1):fftWindow(2)), windowedFFT);
+        else
+            plot(fftData)
+        end
     end
     % plot(f, fftData)
 

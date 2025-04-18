@@ -23,6 +23,8 @@ dir5_1 = "ML Data/dir5_1.txt"
 dir5_1_labels = "ML Data/dir5_1_labels.txt"
 dir5_2 = "ML Data/dir5_2.txt"
 dir5_2_labels = "ML Data/dir5_2_labels.txt"
+dir5_2_48to150 = "ML Data/dir5_2_48to150.txt"
+dir5_2_smooth3 = "ML Data/dir5_2_smooth3.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
 fileName = dir5_2
@@ -35,14 +37,15 @@ labelFileName = dir5_2_labels
 num_labels = 5
 files_per_label = 10
 rows_per_file = 1
-kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
+kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-test split
 kFoldNum = 5
 internalSplit = True
 stringLabel = False # False - Numerical labels
 floatLabel = False
-convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 labelFontsize = 32
 textFontsize = 26 #26
+splitNum = 5 # Index to split for train-test split
 
 train_indices = []
 test_indices = []
@@ -71,8 +74,8 @@ if (not(kFoldOrNot)):
         #np.where(y == label, 1)[0]
 
         # Split the indices: first 80 for training, last 20 for testing
-        train_indices.extend(label_rows[:9])
-        test_indices.extend(label_rows[9:])
+        train_indices.extend(label_rows[:splitNum])
+        test_indices.extend(label_rows[splitNum:])
 
     # Convert to arrays for indexing
     train_indices = np.array(train_indices)
