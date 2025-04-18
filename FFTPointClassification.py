@@ -28,8 +28,8 @@ dir5_2_smooth3 = "ML Data/dir5_2_smooth3.txt"
 dir5_3_triangle = "ML Data/dir5_3_triangle.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir5_3_triangle
-labelFileName = dir5_2_labels
+fileName = dir5_2
+labelFileName = dir5_2_labels 
 
 #testFileName = trimic1_3
 #testLabelFileName = trimic1relabels
@@ -38,15 +38,15 @@ labelFileName = dir5_2_labels
 num_labels = 5
 files_per_label = 10
 rows_per_file = 1
-kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-test split
+kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
 kFoldNum = 5
 internalSplit = True
 stringLabel = False # False - Numerical labels
 floatLabel = False
-convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 labelFontsize = 32
 textFontsize = 26 #26
-splitNum = 5 # Index to split for train-test split
+splitNum = 9 # Index to split for train-test split
 
 train_indices = []
 test_indices = []
@@ -89,11 +89,11 @@ if (not(kFoldOrNot)):
     y_train, y_test = y[train_indices], y[test_indices]
 
 # Train the SVM model
-model = SVC(kernel='linear')
+#model = SVC(kernel='linear')
 #model = XGBClassifier()
 #model = GaussianNB()
 #model = KNeighborsClassifier(n_neighbors=5)
-#model = DecisionTreeClassifier()
+model = DecisionTreeClassifier()
 #model = RandomForestClassifier(n_estimators=100)
 
 # Perform 5-fold cross-validation
@@ -156,7 +156,7 @@ if (convertModel):
     #onnx_model = convert_sklearn(model, initial_types=initial_type)
 
     # Save to file
-    with open("svm_model.onnx", "wb") as f:
+    with open("rf_model.onnx", "wb") as f:
         f.write(onnx_model.SerializeToString())
     
 # Visualize the confusion matrix
