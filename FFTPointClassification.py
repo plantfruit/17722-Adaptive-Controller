@@ -25,9 +25,10 @@ dir5_2 = "ML Data/dir5_2.txt"
 dir5_2_labels = "ML Data/dir5_2_labels.txt"
 dir5_2_48to150 = "ML Data/dir5_2_48to150.txt"
 dir5_2_smooth3 = "ML Data/dir5_2_smooth3.txt"
+dir5_3_triangle = "ML Data/dir5_3_triangle.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir5_2
+fileName = dir5_3_triangle
 labelFileName = dir5_2_labels
 
 #testFileName = trimic1_3
