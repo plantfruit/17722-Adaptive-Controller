@@ -41,15 +41,15 @@ labelFileName = dir6_1_labels
 num_labels = 6
 files_per_label = 10
 rows_per_file = 1
-kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-test split
+kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
 kFoldNum = 5
 internalSplit = True
-stringLabel = False # False - Numerical labels
+stringLabel = False # False - Numerical labels on the confusion matrix figure
 floatLabel = False
-convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 labelFontsize = 32
 textFontsize = 26 #26
-splitNum = 9 # Index to split for train-test split
+splitNum = 10 # Index to split for train-test split
 
 train_indices = []
 test_indices = []
@@ -77,9 +77,13 @@ if (not(kFoldOrNot)):
         label_rows = np.where(y == label)[0]
         #np.where(y == label, 1)[0]
 
-        # Split the indices: first 80 for training, last 20 for testing
-        train_indices.extend(label_rows[:splitNum])
-        test_indices.extend(label_rows[splitNum:])
+        if (not(splitNum == files_per_label)):
+            # Split the indices: first 80 for training, last 20 for testing
+            train_indices.extend(label_rows[:splitNum])
+            test_indices.extend(label_rows[splitNum:])
+        else:
+            train_indices.extend(label_rows[:splitNum])
+            test_indices.extend(label_rows[:splitNum])        
 
     # Convert to arrays for indexing
     train_indices = np.array(train_indices)
@@ -90,6 +94,7 @@ if (not(kFoldOrNot)):
     # Split the dataset
     X_train, X_test = X_reshaped[train_indices], X_reshaped[test_indices]
     y_train, y_test = y[train_indices], y[test_indices]
+print(np.shape(X_train))
 
 # Train the SVM model
 model = SVC(kernel='linear')
@@ -159,7 +164,7 @@ if (convertModel):
     #onnx_model = convert_sklearn(model, initial_types=initial_type)
 
     # Save to file
-    with open("rf_model.onnx", "wb") as f:
+    with open("svm_model.onnx", "wb") as f:
         f.write(onnx_model.SerializeToString())
     
 # Visualize the confusion matrix
