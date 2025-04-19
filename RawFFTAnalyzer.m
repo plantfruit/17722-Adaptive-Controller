@@ -8,6 +8,7 @@ fftTest1 = 'Mic Data/Apr 17 Phone FFT Test';
 fftTest2 = 'Mic Data/Apr 17 Windowed FFT Test';
 d5_1 = 'Mic Data/Apr 17 D Pad 5';
 d5_3 = 'Mic Data/Apr 18 Triangle';
+d5_4 = 'Mic Data/Apr 19 FFT 2';
 
 % Constants
 Fs = 48e3;
@@ -23,7 +24,7 @@ doSubplots = true;
 showWindowed = false;
 
 % Select folder to analyze
-folderPath = d5_3;
+folderPath = d5_4;
 
 % Source: https://www.mathworks.com/matlabcentral/answers/411500-how-do-i-read-all-the-files-in-a-folder
 files = dir([folderPath '/*.txt']);
