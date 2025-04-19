@@ -7,22 +7,24 @@ close all
 fftTest1 = 'Mic Data/Apr 17 Phone FFT Test';
 fftTest2 = 'Mic Data/Apr 17 Windowed FFT Test';
 d5_1 = 'Mic Data/Apr 17 D Pad 5';
+d5_3 = 'Mic Data/Apr 18 Triangle';
+d5_4 = 'Mic Data/Apr 19 FFT 2';
 
 % Constants
 Fs = 48e3;
 
 % Parameters
-fftWindow = [81 1601];
-fftLen = 152;
+fftWindow = [48 150]; %[81 1601];
+fftLen = 576; %152;
 subDims = [5 10];
 
 % Switches
 doPlotting = true;
 doSubplots = true;
-showWindowed = true;
+showWindowed = false;
 
 % Select folder to analyze
-folderPath = d5_1;
+folderPath = d5_4;
 
 % Source: https://www.mathworks.com/matlabcentral/answers/411500-how-do-i-read-all-the-files-in-a-folder
 files = dir([folderPath '/*.txt']);
@@ -40,6 +42,8 @@ for k = 1:length(fileNames)
     % y-vector
     fftData = readmatrix(fileName);
 
+    % fftData = smooth(fftData, 3);
+
     allFFTs(k,:) = fftData;
 
     % x-vector
@@ -53,11 +57,10 @@ for k = 1:length(fileNames)
         end
         
         if (showWindowed) 
-            plot(fftData)
-        else
             windowedFFT = fftData((fftWindow(1):fftWindow(2)));
             plot(f(fftWindow(1):fftWindow(2)), windowedFFT);
-            xlabel()
+        else
+            plot(fftData)
         end
     end
     % plot(f, fftData)

@@ -26,24 +26,26 @@ dir5_2_labels = "ML Data/dir5_2_labels.txt"
 dir5_2_48to150 = "ML Data/dir5_2_48to150.txt"
 dir5_2_smooth3 = "ML Data/dir5_2_smooth3.txt"
 dir5_3_triangle = "ML Data/dir5_3_triangle.txt"
+dir6_1 = "ML Data/dir6_1.txt"
+dir6_1_labels = "ML Data/dir6_1_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir5_2
-labelFileName = dir5_2_labels 
+fileName = dir6_1
+labelFileName = dir6_1_labels 
 
 #testFileName = trimic1_3
 #testLabelFileName = trimic1relabels
 
 # PARAMETERS
-num_labels = 5
+num_labels = 6
 files_per_label = 10
 rows_per_file = 1
-kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
+kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-test split
 kFoldNum = 5
 internalSplit = True
 stringLabel = False # False - Numerical labels
 floatLabel = False
-convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 labelFontsize = 32
 textFontsize = 26 #26
 splitNum = 9 # Index to split for train-test split
