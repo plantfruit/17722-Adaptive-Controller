@@ -18,13 +18,13 @@ Fs = 48e3;
 fftWindow = [48 150]; %[81 1601];
 fftLen = 576; %152;
 subDims = [6 10];
-smoothingFactor = 10;
+smoothingFactor = 12;
 
 % Switches
 doPlotting = true;
 doSubplots = true;
 showWindowed = false;
-doSmooth = false;
+doSmooth = true;
 
 % Select folder to analyze
 folderPath = d6_1;

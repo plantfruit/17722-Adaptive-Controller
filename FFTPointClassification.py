@@ -28,9 +28,10 @@ dir5_2_smooth3 = "ML Data/dir5_2_smooth3.txt"
 dir5_3_triangle = "ML Data/dir5_3_triangle.txt"
 dir6_1 = "ML Data/dir6_1.txt"
 dir6_1_labels = "ML Data/dir6_1_labels.txt"
+dir6_1_smooth12 = "ML Data/dir6_1_smooth12.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir6_1
+fileName = dir6_1_smooth12
 labelFileName = dir6_1_labels 
 
 #testFileName = trimic1_3
@@ -91,11 +92,11 @@ if (not(kFoldOrNot)):
     y_train, y_test = y[train_indices], y[test_indices]
 
 # Train the SVM model
-#model = SVC(kernel='linear')
+model = SVC(kernel='linear')
 #model = XGBClassifier()
 #model = GaussianNB()
 #model = KNeighborsClassifier(n_neighbors=5)
-model = DecisionTreeClassifier()
+#model = DecisionTreeClassifier()
 #model = RandomForestClassifier(n_estimators=100)
 
 # Perform 5-fold cross-validation
