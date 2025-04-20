@@ -10,6 +10,7 @@ d5_1 = 'Mic Data/Apr 17 D Pad 5';
 d5_3 = 'Mic Data/Apr 18 Triangle';
 d5_4 = 'Mic Data/Apr 19 FFT 2';
 d6_1 = 'Mic Data/Apr 19 FFT Big';
+d6_2 = 'Mic Data/Apr 20 Asymmetry';
 
 % Constants
 Fs = 48e3;
@@ -17,7 +18,7 @@ Fs = 48e3;
 % Parameters
 fftWindow = [48 150]; %[81 1601];
 fftLen = 576; %152;
-subDims = [6 10];
+subDims = [6 20];
 smoothingFactor = 12;
 
 % Switches
@@ -27,7 +28,7 @@ showWindowed = false;
 doSmooth = true;
 
 % Select folder to analyze
-folderPath = d6_1;
+folderPath = d6_2;
 
 % Source: https://www.mathworks.com/matlabcentral/answers/411500-how-do-i-read-all-the-files-in-a-folder
 files = dir([folderPath '/*.txt']);

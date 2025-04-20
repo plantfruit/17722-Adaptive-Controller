@@ -29,27 +29,31 @@ dir5_3_triangle = "ML Data/dir5_3_triangle.txt"
 dir6_1 = "ML Data/dir6_1.txt"
 dir6_1_labels = "ML Data/dir6_1_labels.txt"
 dir6_1_smooth12 = "ML Data/dir6_1_smooth12.txt"
+dir6_2 = "ML Data/dir6_2.txt" # Asymmetrical shapes on floor of controller, pre-smoothed by 12
+dir6_2_labels = "ML Data/dir6_2_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir6_1_smooth12
-labelFileName = dir6_1_labels 
+fileName = dir6_2
+labelFileName = dir6_2_labels
 
 #testFileName = trimic1_3
 #testLabelFileName = trimic1relabels
 
 # PARAMETERS
 num_labels = 6
-files_per_label = 10
-rows_per_file = 1
-kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
-kFoldNum = 5
-internalSplit = True
-stringLabel = False # False - Numerical labels on the confusion matrix figure
-floatLabel = False
-convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
-labelFontsize = 32
+files_per_label = 20 
+rows_per_file = 1 # Pulses extracted via cross-correlation
+kFoldNum = 5 # For cross-validation
+labelFontsize = 32 # For the confusion matrix axes
 textFontsize = 26 #26
-splitNum = 10 # Index to split for train-test split
+splitNum = 20 # Index to split for train-test split
+
+# PARAMETERS
+kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
+internalSplit = True # True - Split data into train and test sets, False - Load different datasets for train and test
+stringLabel = False # False - Numerical labels on the confusion matrix figure
+floatLabel = False # Handle edge case where labels are decimals
+convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 
 train_indices = []
 test_indices = []
@@ -94,7 +98,7 @@ if (not(kFoldOrNot)):
     # Split the dataset
     X_train, X_test = X_reshaped[train_indices], X_reshaped[test_indices]
     y_train, y_test = y[train_indices], y[test_indices]
-print(np.shape(X_train))
+    print(np.shape(X_train))
 
 # Train the SVM model
 model = SVC(kernel='linear')
