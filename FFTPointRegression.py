@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 from xgboost import XGBClassifier
 from sklearn.model_selection import cross_val_predict, cross_val_score
 import tensorflow as tf
@@ -19,6 +19,7 @@ from onnxruntime import InferenceSession
 from skl2onnx.algebra.onnx_ops import OnnxSub, OnnxDiv
 from skl2onnx.algebra.onnx_operator_mixin import OnnxOperatorMixin
 from create_cnn import *
+from sklearn.svm import SVR
 
 # FILENAMES
 dir5_1 = "ML Data/dir5_1.txt"
@@ -31,31 +32,27 @@ dir5_3_triangle = "ML Data/dir5_3_triangle.txt"
 dir6_1 = "ML Data/dir6_1.txt"
 dir6_1_labels = "ML Data/dir6_1_labels.txt"
 dir6_1_smooth12 = "ML Data/dir6_1_smooth12.txt"
-dir6_2 = "ML Data/dir6_2.txt" # Asymmetrical shapes on floor of controller, pre-smoothed by 12
-dir6_2_labels = "ML Data/dir6_2_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir6_2
-labelFileName = dir6_2_labels
+fileName = dir6_1_smooth12
+labelFileName = dir6_1_labels 
 
 #testFileName = trimic1_3
 #testLabelFileName = trimic1relabels
 
 # PARAMETERS
 num_labels = 6
-files_per_label = 20 
-rows_per_file = 1 # Pulses extracted via cross-correlation
-kFoldNum = 5 # For cross-validation
-labelFontsize = 32 # For the confusion matrix axes
-textFontsize = 26 #26
-splitNum = 20 # Index to split for train-test split
-
-# PARAMETERS
+files_per_label = 10
+rows_per_file = 1
 kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-test split
-internalSplit = True # True - Split data into train and test sets, False - Load different datasets for train and test
+kFoldNum = 5
+internalSplit = True
 stringLabel = False # False - Numerical labels on the confusion matrix figure
-floatLabel = False # Handle edge case where labels are decimals
-convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+floatLabel = False
+convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+labelFontsize = 32
+textFontsize = 26 #26
+splitNum = 10 # Index to split for train-test split
 
 train_indices = []
 test_indices = []
@@ -101,7 +98,6 @@ if (not(kFoldOrNot)):
     X_train, X_test = X_reshaped[train_indices], X_reshaped[test_indices]
     y_train, y_test = y[train_indices], y[test_indices]
     print(np.shape(X_train))
-    print(np.shape(X_train))
 
 # Train the SVM model
 #model = SVC(kernel='linear')
@@ -112,10 +108,36 @@ if (not(kFoldOrNot)):
 #model = DecisionTreeClassifier()
 #model = RandomForestClassifier(n_estimators=100)
 #cnn = SimpleCNN() #can onlu b
-model =  MLPClassifier(solver='lbfgs', alpha=1e-5,
-                    hidden_layer_sizes=(5, 2), random_state=1)
+#model =  MLPRegressor(random_state=1, max_iter=2000, tol=0.1)
+model_x = SVR()
+model_y = SVR()
 
-
+#from left to center 
+# "1" = (-2, 0)
+# "2" = (0, 2)
+# "3" = (2, 0)
+# "4" = (0, -2)
+# "5" = (0,0)
+def relabel_data(y):
+    new_x_axis_y = np.array()
+    new_y_axis_y = np.array()
+    for i in y:
+        if i == 1:
+            new_x_axis_y.append(-2)
+            new_y_axis_y.append(0)
+        elif i == 2:
+            new_x_axis_y.append(0)
+            new_y_axis_y.append(2)
+        elif i == 3:
+            new_x_axis_y.append(2)
+            new_y_axis_y.append(0)
+        elif i == 4:
+            new_x_axis_y.append(0)
+            new_y_axis_y.append(-2)
+        elif i == 5:
+            new_x_axis_y.append(0)
+            new_y_axis_y.append(0)
+    return new_x_axis_y, new_y_axis_y 
 # Perform 5-fold cross-validation
 if (kFoldOrNot):
     y_pred = cross_val_predict(model, X_reshaped, y, cv=kFoldNum)
