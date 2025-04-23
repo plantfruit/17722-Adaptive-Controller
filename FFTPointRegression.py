@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, mean_squared_error
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
@@ -12,6 +12,7 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import cross_val_predict, cross_val_score
 import tensorflow as tf
 from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
 from skl2onnx import convert_sklearn, to_onnx, wrap_as_onnx_mixin
@@ -20,6 +21,7 @@ from skl2onnx.algebra.onnx_ops import OnnxSub, OnnxDiv
 from skl2onnx.algebra.onnx_operator_mixin import OnnxOperatorMixin
 from create_cnn import *
 from sklearn.svm import SVR
+import pandas as pd
 
 # FILENAMES
 dir5_1 = "ML Data/dir5_1.txt"
@@ -32,10 +34,12 @@ dir5_3_triangle = "ML Data/dir5_3_triangle.txt"
 dir6_1 = "ML Data/dir6_1.txt"
 dir6_1_labels = "ML Data/dir6_1_labels.txt"
 dir6_1_smooth12 = "ML Data/dir6_1_smooth12.txt"
+dir6_2 = "ML Data/dir6_2.txt"
+dir6_2_labels = "ML Data/dir6_2_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir6_1_smooth12
-labelFileName = dir6_1_labels 
+fileName = dir6_2
+labelFileName = dir6_2_labels 
 
 #testFileName = trimic1_3
 #testLabelFileName = trimic1relabels
@@ -74,7 +78,22 @@ if X.ndim == 1:
 else:
     X_reshaped = X
 
-if (not(kFoldOrNot)):
+df = pd.DataFrame(X)
+df['label'] = y
+
+use_df = df[df['label'] != 6]
+
+train, test = train_test_split(use_df)
+
+all_x = use_df.drop(['label'], axis=1).to_numpy()
+all_y = use_df['label'].to_numpy()
+train_x = train.drop(['label'], axis=1).to_numpy()
+train_y = train['label'].to_numpy()
+test_x = test.drop(['label'], axis=1).to_numpy()
+test_y = test['label'].to_numpy()
+
+
+'''if (not(kFoldOrNot)):
     for label in range(1, num_labels + 1):
         # Get all rows for this label
         label_rows = np.where(y == label)[0]
@@ -97,7 +116,7 @@ if (not(kFoldOrNot)):
     # Split the dataset
     X_train, X_test = X_reshaped[train_indices], X_reshaped[test_indices]
     y_train, y_test = y[train_indices], y[test_indices]
-    print(np.shape(X_train))
+    print(np.shape(X_train))'''
 
 # Train the SVM model
 #model = SVC(kernel='linear')
@@ -119,8 +138,8 @@ model_y = SVR()
 # "4" = (0, -2)
 # "5" = (0,0)
 def relabel_data(y):
-    new_x_axis_y = np.array()
-    new_y_axis_y = np.array()
+    new_x_axis_y = []
+    new_y_axis_y = []
     for i in y:
         if i == 1:
             new_x_axis_y.append(-2)
@@ -137,24 +156,44 @@ def relabel_data(y):
         elif i == 5:
             new_x_axis_y.append(0)
             new_y_axis_y.append(0)
-    return new_x_axis_y, new_y_axis_y 
+    return np.array(new_x_axis_y).reshape(-1, 1), np.array(new_y_axis_y).reshape(-1, 1)
+train_x_axis_y, train_y_axis_y = relabel_data(train_y)
+test_x_axis_y, test_y_axis_y = relabel_data(test_y)
+
+model_x.fit(train_x, train_x_axis_y)
+model_y.fit(train_x, train_y_axis_y)
+
+# Make predictions on the test set
+y_pred_x = model_x.predict(test_x)
+y_pred_y = model_y.predict(test_x)
+
+accuracy_x = mean_squared_error(test_x_axis_y, y_pred_x, multioutput='raw_values')
+accuracy_y = mean_squared_error(test_y_axis_y, y_pred_y, multioutput='raw_values')
+print('first')
+print(accuracy_x)
+print(accuracy_y)
 # Perform 5-fold cross-validation
 if (kFoldOrNot):
-    y_pred = cross_val_predict(model, X_reshaped, y, cv=kFoldNum)
+    y_pred_x = cross_val_predict(model_x, all_x, train_x_axis_y, cv=kFoldNum)
+    y_pred_y = cross_val_predict(model_y, all_x, train_y_axis_y, cv=kFoldNum)
 
-    accuracy = accuracy_score(y, y_pred)
-    cv_scores = cross_val_score(model, X_reshaped, y, cv=kFoldNum)
-    print(cv_scores)
-    print(np.mean(cv_scores))
+    accuracy_x = mean_squared_error(train_x_axis_y, y_pred_x, multioutput='raw_values')
+    accuracy_y = mean_squared_error(train_y_axis_y, y_pred_y, multioutput='raw_values')
+    #cv_scores_x = cross_val_score(model_x, train_x, train_x_axis_y, cv=kFoldNum)
+    #cv_scores_y = cross_val_score(model_x, train_x, train_x_axis_y, cv=kFoldNum)
+    print(accuracy_x)
+    print(accuracy_y)
     #model.fit(X_reshaped, y)
     #print(model.feature_importances_)
 else:
     # Test-train within the same dataset
     if (internalSplit):
-        model.fit(X_train, y_train)
+        model_x.fit(train_x, train_y)
+        model_y.fit(train_x, train_y)
 
         # Make predictions on the test set
-        y_pred = model.predict(X_test)
+        y_pred_x = model_x.predict(test_x)
+        y_pred_y = model_y.predict(test_x)
     # Train with one dataset and test with another dataset
     else:
         X_train = np.loadtxt(fileName)

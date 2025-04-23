@@ -55,7 +55,7 @@ kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-t
 internalSplit = True # True - Split data into train and test sets, False - Load different datasets for train and test
 stringLabel = False # False - Numerical labels on the confusion matrix figure
 floatLabel = False # Handle edge case where labels are decimals
-convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 
 train_indices = []
 test_indices = []
@@ -104,16 +104,16 @@ if (not(kFoldOrNot)):
     print(np.shape(X_train))
 
 # Train the SVM model
-#model = SVC(kernel='linear')
+model = SVC(kernel='linear')
 #model = SVC(kernel='rbf')
 #model = XGBClassifier()
 #model = GaussianNB()
 #model = KNeighborsClassifier(n_neighbors=5)
 #model = DecisionTreeClassifier()
 #model = RandomForestClassifier(n_estimators=100)
-#cnn = SimpleCNN() #can onlu b
-model =  MLPClassifier(solver='lbfgs', alpha=1e-5,
-                    hidden_layer_sizes=(5, 2), random_state=1)
+#cnn = SimpleCNN()
+#model =  MLPClassifier(solver='lbfgs', alpha=1e-5,
+                    #hidden_layer_sizes=(5, 2), random_state=1)
 
 
 # Perform 5-fold cross-validation
