@@ -1,3 +1,4 @@
+# https://github.com/markjay4k/Audio-Spectrum-Analyzer-in-Python/blob/master/spec.py
 # to display in separate Tk window
 import matplotlib
 matplotlib.use('TkAgg')
@@ -13,7 +14,7 @@ from tkinter import TclError
 
 # ------------ Audio Setup ---------------
 # constants
-CHUNK = 1024 * 3             # samples per frame
+CHUNK = 1024 * 4             # samples per frame
 FORMAT = pyaudio.paInt16     # audio format (bytes per sample?)
 CHANNELS = 1                 # single channel for microphone
 RATE = 48000                 # samples per second
@@ -50,18 +51,21 @@ xf = np.linspace(0, RATE, CHUNK)     # frequencies (spectrum)
 line, = ax1.plot(x, np.random.rand(CHUNK), '-', lw=2)
 
 # create semilogx line for spectrum, to plot the waveform as log not lin
-line_fft, = ax2.semilogx(xf, np.random.rand(CHUNK), '-', lw=2)
+line_fft, = ax2.plot(xf, np.random.rand(CHUNK), '-', lw=2)
+#line_fft, = ax2.semilogx(xf, np.random.rand(CHUNK), '-', lw=2)
 
 # format waveform axes
 ax1.set_title('AUDIO WAVEFORM')
 ax1.set_xlabel('samples')
 ax1.set_ylabel('volume')
 ax1.set_ylim(-AMPLITUDE_LIMIT, AMPLITUDE_LIMIT)
+#ax1.set_ylim(-AMPLITUDE_LIMIT, AMPLITUDE_LIMIT)
 ax1.set_xlim(0, 2 * CHUNK)
 plt.setp(ax1, xticks=[0, CHUNK, 2 * CHUNK], yticks=[-AMPLITUDE_LIMIT, 0, AMPLITUDE_LIMIT])
 
 # format spectrum axes
 ax2.set_xlim(20, RATE / 2)
+plt.setp(ax2, yticks = [0, 1000])
 print('stream started')
 
 if __name__ == '__main__':
@@ -82,8 +86,8 @@ if __name__ == '__main__':
 		# compute FFT and update line
 		yf = fft(data_np)
 		# The fft will return complex numbers, so np.abs will return their magnitude
-
-		line_fft.set_ydata(np.abs(yf[0:CHUNK])  / (512 * CHUNK))
+		line_fft.set_ydata(np.abs(yf[0:CHUNK]) / 512)
+		#line_fft.set_ydata(np.abs(yf[0:CHUNK])  / (512 * CHUNK))
 		
 		# update figure canvas
 		try:
