@@ -11,9 +11,7 @@ d5_3 = 'Mic Data/Apr 18 Triangle';
 d5_4 = 'Mic Data/Apr 19 FFT 2';
 d6_1 = 'Mic Data/Apr 19 FFT Big';
 d6_2 = 'Mic Data/Apr 20 Asymmetry';
-d9_1 = 'Mic Data/Apr 27 D Pad 9';
-d9_2 = 'Mic Data/Apr 27 D Pad 9 Kuang';
-d9_3 = 'Mic Data/Apr 27 D Pad 9 Yifeng';
+d9_
 
 % Constants
 Fs = 48e3;
