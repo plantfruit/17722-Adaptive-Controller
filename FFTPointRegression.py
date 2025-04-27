@@ -82,6 +82,7 @@ df = pd.DataFrame(X)
 df['label'] = y
 
 use_df = df[df['label'] != 6]
+train_press_no_press, test_press_no_press = train_test_split(df)
 
 train, test = train_test_split(use_df)
 
@@ -130,6 +131,7 @@ test_y = test['label'].to_numpy()
 #model =  MLPRegressor(random_state=1, max_iter=2000, tol=0.1)
 model_x = SVR()
 model_y = SVR()
+model_press_no_press = SVC(kernel='linear')
 
 #from left to center 
 # "1" = (-2, 0)
@@ -137,38 +139,49 @@ model_y = SVR()
 # "3" = (2, 0)
 # "4" = (0, -2)
 # "5" = (0,0)
+# "1" = pressed
 def relabel_data(y):
     new_x_axis_y = []
     new_y_axis_y = []
+    y_no_press = []
     for i in y:
         if i == 1:
             new_x_axis_y.append(-2)
             new_y_axis_y.append(0)
+            y_no_press.append(1)
         elif i == 2:
             new_x_axis_y.append(0)
             new_y_axis_y.append(2)
+            y_no_press.append(1)
         elif i == 3:
             new_x_axis_y.append(2)
             new_y_axis_y.append(0)
+            y_no_press.append(1)
         elif i == 4:
             new_x_axis_y.append(0)
             new_y_axis_y.append(-2)
+            y_no_press.append(1)
         elif i == 5:
             new_x_axis_y.append(0)
             new_y_axis_y.append(0)
-    return np.array(new_x_axis_y).reshape(-1, 1), np.array(new_y_axis_y).reshape(-1, 1)
-train_x_axis_y, train_y_axis_y = relabel_data(train_y)
-test_x_axis_y, test_y_axis_y = relabel_data(test_y)
+            y_no_press.append(1)
+        else:
+            y_no_press.append(0)
+    return np.array(new_x_axis_y).reshape(-1, 1), np.array(new_y_axis_y).reshape(-1, 1), np.array(y_no_press).reshape(-1,1)
+train_x_axis_y, train_y_axis_y, train_y_no_press= relabel_data(train_y)
+test_x_axis_y, test_y_axis_y, test_y_no_press= relabel_data(test_y)
 
 model_x.fit(train_x, train_x_axis_y)
 model_y.fit(train_x, train_y_axis_y)
+model_press_no_press.fit(train_press_no_press, train_y_no_press)
 
 # Make predictions on the test set
 y_pred_x = model_x.predict(test_x)
 y_pred_y = model_y.predict(test_x)
+y_pred_no_press = model_y.predict(test_x)
 
-accuracy_x = mean_squared_error(test_x_axis_y, y_pred_x, multioutput='raw_values')
-accuracy_y = mean_squared_error(test_y_axis_y, y_pred_y, multioutput='raw_values')
+accuracy_x = mean_squared_error(test_x_axis_y, y_pred_x)
+accuracy_y = mean_squared_error(test_y_axis_y, y_pred_y)
 print('first')
 print(accuracy_x)
 print(accuracy_y)
