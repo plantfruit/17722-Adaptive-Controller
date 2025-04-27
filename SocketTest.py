@@ -15,6 +15,12 @@ label_to_key = {
     "7": 'stop',
 }
 
+# Number of consecutive presses required
+N = 3  # You can adjust this value as needed
+
+# Dictionary to track consecutive presses for each key
+consecutive_presses = {key: 0 for key in label_to_key.values()}
+
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #server.bind(("127.0.0.1", 5000))
 server.bind(("0.0.0.0", 5000))
@@ -25,23 +31,26 @@ client, addr = server.accept()
 print(f"Connected to {addr}")
 
 loopRunning = True
-oldKey = "|"
+pressed_key = "|"
+old_key = "|"
 while loopRunning:
     data = client.recv(1024).decode().strip()
     #print(data)
 
     if data in label_to_key:        
         key = label_to_key[data]
-        #print(f"Pressed: {key}")
+        print(f"Pressed: {key}")
 
         if (key == 'stop'):
             loopRunning = False
-        elif(key == 'pause'):
-            pydin.keyUp(oldKey)
-            oldKey = 'pause'
-        elif (not(oldKey == key)):
-            pydin.keyUp(oldKey)
-            pydin.keyDown(key)
-            oldKey = key
-        #keyboard.press(key)
-        #keyboard.release(key)
+        else:
+            if old_key == key:
+                consecutive_presses[key] += 1
+            else:
+                consecutive_presses[key] = 1
+                old_key = key
+
+            if consecutive_presses[key] >= N:
+                pydin.keyUp(pressed_key)
+                pydin.keyDown(key)
+                pressed_key = key
