@@ -1,15 +1,15 @@
 import socket
-from pynput.keyboard import Controller
-import keyboard
+#from pynput.keyboard import Controller
+#import keyboard
 import pydirectinput as pydin
 
 #keyboard = Controller()
 
 label_to_key = {
-    "1": 'a',    # left
-    "2": 'w',    # up
-    "3": 'd',    # right
-    "4": 's',    # down
+    "1": 'left', #'a',    # left
+    "2": 'up', #'w',    # up
+    "3": 'right', #'d',    # right
+    "4": 'down', #'s',    # down
     "5": 'space',
     "6": 'pause',
     "7": 'stop',
@@ -32,7 +32,7 @@ while loopRunning:
 
     if data in label_to_key:        
         key = label_to_key[data]
-        #print(f"Pressed: {key}")
+         
 
         if (key == 'stop'):
             loopRunning = False
@@ -43,5 +43,7 @@ while loopRunning:
             pydin.keyUp(oldKey)
             pydin.keyDown(key)
             oldKey = key
+
+        print(f"Pressed: {key}")
         #keyboard.press(key)
         #keyboard.release(key)
