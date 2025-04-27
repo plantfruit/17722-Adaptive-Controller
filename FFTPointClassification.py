@@ -31,16 +31,25 @@ dir6_1_labels = "ML Data/dir6_1_labels.txt"
 dir6_1_smooth12 = "ML Data/dir6_1_smooth12.txt"
 dir6_2 = "ML Data/dir6_2.txt" # Asymmetrical shapes on floor of controller, pre-smoothed by 12
 dir6_2_labels = "ML Data/dir6_2_labels.txt"
+dir9_123 = "ML Data/dir9_123.txt"
+dir9_combined_labels = "ML Data/dir9_combined_labels.txt"
+dir9_1 = "ML Data/dir9_1.txt"
+dir9_2 = "ML Data/dir9_2.txt"
+dir9_3 = "ML Data/dir9_3.txt"
+dir9_2and3 = "ML Data/dir9_2and3.txt"
+dir9_1_labels = "ML Data/dir9_1_labels.txt"
+dir9_2_labels = "ML Data/dir9_2_labels.txt"
+dir9_2and3_labels = "ML Data/dir9_2and3_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir6_2
-labelFileName = dir6_2_labels
+fileName = dir9_1
+labelFileName = "ML Data/dir9_1_labelsre.txt"
 
-#testFileName = trimic1_3
-#testLabelFileName = trimic1relabels
+testFileName = dir9_2and3
+testLabelFileName = dir9_2and3_labels
 
 # PARAMETERS
-num_labels = 6
+num_labels = 9
 files_per_label = 20 
 rows_per_file = 1 # Pulses extracted via cross-correlation
 kFoldNum = 5 # For cross-validation
@@ -50,10 +59,10 @@ splitNum = 20 # Index to split for train-test split
 
 # PARAMETERS
 kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
-internalSplit = True # True - Split data into train and test sets, False - Load different datasets for train and test
+internalSplit = False # True - Split data into train and test sets, False - Load different datasets for train and test
 stringLabel = False # False - Numerical labels on the confusion matrix figure
 floatLabel = False # Handle edge case where labels are decimals
-convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 
 train_indices = []
 test_indices = []
@@ -80,14 +89,15 @@ if (not(kFoldOrNot)):
         # Get all rows for this label
         label_rows = np.where(y == label)[0]
         #np.where(y == label, 1)[0]
-
-        if (not(splitNum == files_per_label)):
-            # Split the indices: first 80 for training, last 20 for testing
-            train_indices.extend(label_rows[:splitNum])
-            test_indices.extend(label_rows[splitNum:])
-        else:
-            train_indices.extend(label_rows[:splitNum])
-            test_indices.extend(label_rows[:splitNum])        
+        train_indices.extend(label_rows)
+        test_indices.extend(label_rows)
+        #if (not(splitNum == files_per_label)):
+        #    # Split the indices: first 80 for training, last 20 for testing
+        #    train_indices.extend(label_rows[:splitNum])
+        #    test_indices.extend(label_rows[splitNum:])
+        #else:
+        #    train_indices.extend(label_rows[:splitNum])
+        #    test_indices.extend(label_rows[:splitNum])        
 
     # Convert to arrays for indexing
     train_indices = np.array(train_indices)
