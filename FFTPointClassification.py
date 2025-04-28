@@ -40,16 +40,19 @@ dir9_2and3 = "ML Data/dir9_2and3.txt"
 dir9_1_labels = "ML Data/dir9_1_labels.txt"
 dir9_2_labels = "ML Data/dir9_2_labels.txt"
 dir9_2and3_labels = "ML Data/dir9_2and3_labels.txt"
+dir9_combined2_labels = "ML Data/dir9_combined2_labels.txt"
+dir9_123_5labels = "ML Data/dir9_123_5labels.txt"
+dir9_5label_labels = "ML Data/dir9_5label_labels.txt"
 
 # SELECT FILENAMES FOR ANALYSIS
-fileName = dir9_1
-labelFileName = "ML Data/dir9_1_labelsre.txt"
+fileName = dir9_123_5labels
+labelFileName = dir9_5label_labels
 
 testFileName = dir9_2and3
 testLabelFileName = dir9_2and3_labels
 
 # PARAMETERS
-num_labels = 9
+num_labels = 6
 files_per_label = 20 
 rows_per_file = 1 # Pulses extracted via cross-correlation
 kFoldNum = 5 # For cross-validation
@@ -59,10 +62,10 @@ splitNum = 20 # Index to split for train-test split
 
 # PARAMETERS
 kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
-internalSplit = False # True - Split data into train and test sets, False - Load different datasets for train and test
+internalSplit = True # True - Split data into train and test sets, False - Load different datasets for train and test
 stringLabel = False # False - Numerical labels on the confusion matrix figure
 floatLabel = False # Handle edge case where labels are decimals
-convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 
 train_indices = []
 test_indices = []
