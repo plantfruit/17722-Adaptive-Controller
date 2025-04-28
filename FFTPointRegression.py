@@ -217,12 +217,13 @@ model_press_no_press.fit(train_press_no_press_x, train_no_press_y)
 # Make predictions on the test set
 #y_pred_x = model_x.predict(test_x)
 y_pred_y = model_y.predict(test_x)
-y_pred_no_press = model_y.predict(test_x)
+y_pred_no_press = model_press_no_press.predict(test_press_no_press_x)
 
-#accuracy_x = mean_squared_error(test_x_axis_y, y_pred_x)
+accuracy = accuracy_score(test_press_no_press_y, y_pred_no_press)
 mse_y = mean_squared_error(test_y, y_pred_y)
 
-print(mse_y)
+print(f'Regression MSE: {mse_y}')
+print(f'Classification Accuracy for press no press: {accuracy}')
 
 def display_mse(y_true, y_pred):
     mse = mean_squared_error(y_true, y_pred)
