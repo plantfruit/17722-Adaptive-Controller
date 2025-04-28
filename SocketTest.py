@@ -11,7 +11,7 @@ label_to_key = {
     "3": 'right', #'d',    # right
     "4": 'down', #'s',    # down
     "5": 'space',
-    "6": 'pause',
+    "6": 'unpressed',
     "7": 'stop',
 }
 
@@ -39,7 +39,7 @@ while loopRunning:
 
     if data in label_to_key:        
         key = label_to_key[data]
-        print(f"Pressed: {key}")
+        print(f"Detected: {key}, Pressed: {pressed_key}")
 
         if (key == 'stop'):
             loopRunning = False
@@ -49,8 +49,9 @@ while loopRunning:
             else:
                 consecutive_presses[key] = 1
                 old_key = key
-
-            if consecutive_presses[key] >= N:
+            if consecutive_presses[key] >= N and pressed_key != key:
                 pydin.keyUp(pressed_key)
                 pydin.keyDown(key)
                 pressed_key = key
+
+
