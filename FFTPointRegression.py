@@ -221,3 +221,10 @@ if (convertModel):
     #initial_type = [('input', FloatTensorType([None, 150]))]  # match your vector length
     #onnx_model = convert_sklearn(model, initial_types=initial_type)
 
+
+'''
+should appear in the phone as
+prediction  = model_no_press.predict(feats)
+if prediction == 'pressed:
+    classification = model_y.predict(feats)
+'''
