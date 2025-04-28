@@ -140,6 +140,10 @@ model_press_no_press = SVC(kernel='linear')
 # "4" = (0, -2)
 # "5" = (0,0)
 # "1" = pressed
+
+'''
+there will need to be a new relabeling of the data, since this is directly mapped to kevin's initial data collection
+
 def relabel_data(y):
     new_x_axis_y = []
     new_y_axis_y = []
@@ -168,69 +172,34 @@ def relabel_data(y):
         else:
             y_no_press.append(0)
     return np.array(new_x_axis_y).reshape(-1, 1), np.array(new_y_axis_y).reshape(-1, 1), np.array(y_no_press).reshape(-1,1)
-train_x_axis_y, train_y_axis_y, train_y_no_press= relabel_data(train_y)
-test_x_axis_y, test_y_axis_y, test_y_no_press= relabel_data(test_y)
+'''
 
-model_x.fit(train_x, train_x_axis_y)
-model_y.fit(train_x, train_y_axis_y)
-model_press_no_press.fit(train_press_no_press, train_y_no_press)
+def relabel_data_x(data, no_press):
+    no_press_x = []
+    no_press_y = []
+    y = []
+    x =[] 
+    return x, y, no_press_x, no_press_y
+#train_x_axis_y, train_y_axis_y, train_y_no_press= relabel_data(train_y)
+#test_x_axis_y, test_y_axis_y, test_y_no_press= relabel_data(test_y)
+
+train_x, train_y, train_no_press_x, train_no_press_y = relabel_data_x(train_x, train_y)
+test_x, test_y, test_no_press_x, test_no_press_y = relabel_data_x(test_x, test_y)
+
+
+model_y.fit(train_x, train_y)
+#model_y.fit(train_x, train_y_axis_y)
+model_press_no_press.fit(train_press_no_press, train_no_press_y)
 
 # Make predictions on the test set
-y_pred_x = model_x.predict(test_x)
+#y_pred_x = model_x.predict(test_x)
 y_pred_y = model_y.predict(test_x)
 y_pred_no_press = model_y.predict(test_x)
 
-accuracy_x = mean_squared_error(test_x_axis_y, y_pred_x)
-accuracy_y = mean_squared_error(test_y_axis_y, y_pred_y)
-print('first')
-print(accuracy_x)
-print(accuracy_y)
-# Perform 5-fold cross-validation
-if (kFoldOrNot):
-    y_pred_x = cross_val_predict(model_x, all_x, train_x_axis_y, cv=kFoldNum)
-    y_pred_y = cross_val_predict(model_y, all_x, train_y_axis_y, cv=kFoldNum)
+#accuracy_x = mean_squared_error(test_x_axis_y, y_pred_x)
+mse_y = mean_squared_error(test_y, y_pred_y)
 
-    accuracy_x = mean_squared_error(train_x_axis_y, y_pred_x, multioutput='raw_values')
-    accuracy_y = mean_squared_error(train_y_axis_y, y_pred_y, multioutput='raw_values')
-    #cv_scores_x = cross_val_score(model_x, train_x, train_x_axis_y, cv=kFoldNum)
-    #cv_scores_y = cross_val_score(model_x, train_x, train_x_axis_y, cv=kFoldNum)
-    print(accuracy_x)
-    print(accuracy_y)
-    #model.fit(X_reshaped, y)
-    #print(model.feature_importances_)
-else:
-    # Test-train within the same dataset
-    if (internalSplit):
-        model_x.fit(train_x, train_y)
-        model_y.fit(train_x, train_y)
-
-        # Make predictions on the test set
-        y_pred_x = model_x.predict(test_x)
-        y_pred_y = model_y.predict(test_x)
-    # Train with one dataset and test with another dataset
-    else:
-        X_train = np.loadtxt(fileName)
-        y_train = np.loadtxt(labelFileName)
-        X_test = np.loadtxt(testFileName)
-        y_test = np.loadtxt(testLabelFileName)
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
-
-    # Calculate the accuracy of the predictions
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f"Test accuracy: {accuracy * 100:.2f}%")
-
-# Generate the confusion matrix with fixed size
-if (not(stringLabel)):
-    all_labels = np.arange(1, num_labels + 1)
-    #all_labels = (np.arange(1, num_labels + 1) * 0.5 + 0.5 )* 10
-else:
-    all_labels = ["Stylus", "Screwdriver", "Battery", "Plug", "Motor", "Tripod"]
-
-if (kFoldOrNot):
-    cm = confusion_matrix(y, y_pred, labels=all_labels)
-else:
-    cm = confusion_matrix(y_test, y_pred, labels=all_labels)
+print(mse_y)
 
 def predict_with_onnxruntime(onx, X):
     sess = InferenceSession(onx.SerializeToString(), providers=["CPUExecutionProvider"])
@@ -252,28 +221,3 @@ if (convertModel):
     #initial_type = [('input', FloatTensorType([None, 150]))]  # match your vector length
     #onnx_model = convert_sklearn(model, initial_types=initial_type)
 
-    # Save to file
-    with open("svm_model.onnx", "wb") as f:
-        f.write(onnx_model.SerializeToString())
-    
-# Visualize the confusion matrix
-fig = plt.figure(figsize=(12, 9))
-ax = sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=all_labels, yticklabels=all_labels,
-            annot_kws={"size": textFontsize}, vmax = files_per_label * rows_per_file)
-# use matplotlib.colorbar.Colorbar object
-cbar = ax.collections[0].colorbar
-# here set the labelsize by 20
-cbar.ax.tick_params(labelsize=textFontsize)
-#plt.title('Confusion Matrix (Fixed Size)')
-plt.xlabel('Predicted', fontsize = labelFontsize)
-plt.ylabel('True', fontsize = labelFontsize)
-if (stringLabel):
-    textRot = -30
-    plt.xticks(fontsize = textFontsize, rotation= textRot, ha='left')
-else:
-    textRot = 0
-    plt.xticks(fontsize = textFontsize)
-plt.yticks(fontsize = textFontsize, rotation = 0)#, rotation= 30, ha='right')
-plt.tight_layout()
-plt.savefig('figure1.pdf', bbox_inches='tight')
-plt.show()
