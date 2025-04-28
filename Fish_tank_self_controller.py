@@ -54,7 +54,7 @@ class VerticalController:
             #self.target_speed = random.uniform(self.speed_range[0], self.speed_range[1])
             # Direction is now -1 (up), 0 (neutral), or 1 (down)
             #self.target_direction = random.choice([-1, -0.5, 0, 0.5, 1])
-            self.target_speed=5*(abs(y_axis))                        #modify
+            self.target_speed=8*(abs(y_axis))                        #modify
             self.target_direction=-int(y_axis > 0) + int(y_axis < 0)      #-1 if y_axis>0, 1 if y_axis<0, 0 if 0
             self.last_change_time = elapsed_time
         
@@ -266,7 +266,7 @@ def main():
     # Speed control buttons
     speed_buttons = []
     speed_labels = ["Slow", "Medium", "Fast"]
-    speed_values = [1.0, 3.0, 5.0]
+    speed_values = [1.0, 3.5, 5.5]
     
     for i, (label, value) in enumerate(zip(speed_labels, speed_values)):
         x = 500 + i * (button_width + 10)
