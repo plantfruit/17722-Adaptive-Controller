@@ -27,7 +27,7 @@ Fs = 48e3;
 % Parameters
 fftWindow = [48 150]; %[81 1601];
 fftLen = 576; %152;
-subDims = [24 10];
+subDims = [9 10];
 smoothingFactor = 12;
 
 % Switches
@@ -37,7 +37,7 @@ showWindowed = false;
 doSmooth = true;
 
 % SELECT FOLDER TO ANALYZE
-folderPath = ld1_4;
+folderPath = d9_5;
 
 % Source: https://www.mathworks.com/matlabcentral/answers/411500-how-do-i-read-all-the-files-in-a-folder
 files = dir([folderPath '/*.txt']);
