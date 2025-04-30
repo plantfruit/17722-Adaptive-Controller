@@ -63,11 +63,11 @@ textFontsize = 26 #26
 splitNum = 20 # Index to split for train-test split
 
 # PARAMETERS
-kFoldOrNot = False # True - Kfold cross validation, otherwise do a normal train-test split
+kFoldOrNot = True # True - Kfold cross validation, otherwise do a normal train-test split
 internalSplit = True # True - Split data into train and test sets, False - Load different datasets for train and test
 stringLabel = False # False - Numerical labels on the confusion matrix figure
 floatLabel = False # Handle edge case where labels are decimals
-convertModel = True # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
+convertModel = False # Convert trained model to different format for deployment on Android. Don't do this with cross-validation
 
 train_indices = []
 test_indices = []
