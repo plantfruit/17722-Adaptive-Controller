@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.font as tkFont
 from threading import Thread
 import socket
 import pydirectinput as pydin
@@ -7,6 +8,7 @@ class SocketServerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Socket Server Control")
+        self.root.geometry("700x500")  # Initial size
 
         self.keyLabels = ["Left", "Up", "Right", "Down", "Center"]
 
@@ -15,21 +17,32 @@ class SocketServerApp:
         self.server = None
         self.client = None
 
+        # Make entire grid expandable
+        for i in range(7):
+            root.grid_rowconfigure(i, weight=1)
+        for j in range(2):  
+            root.grid_columnconfigure(j, weight=1, uniform = "col")
+
+        # Set font
+        self.default_font = tkFont.Font(family="Helvetica", size=14)
+
         self.key_inputs = {}
         for i in range(0, 5):
             keyLabel = self.keyLabels[i]
-            label = tk.Label(root, text=f"{keyLabel} Key:")
-            label.grid(row=i, column=0)
-            entry = tk.Entry(root)
+            
+            label = tk.Label(root, text=f"{keyLabel} Key:", font = self.default_font)
+            label.grid(row = i, column = 0, sticky = "nsew", padx = 10, pady = 5)
+            
+            entry = tk.Entry(root, font = self.default_font)
             entry.insert(0, self.default_key(i))
-            entry.grid(row=i, column=1)
+            entry.grid(row = i, column = 1, sticky = "nsew", padx = 10, pady = 5)            
             self.key_inputs[str(i)] = entry
 
-        self.start_button = tk.Button(root, text="Start Server", command=self.start_server)
-        self.start_button.grid(row=6, column=0)
+        self.start_button = tk.Button(root, text="Start Server", command=self.start_server, font = self.default_font)
+        self.start_button.grid(row=6, column=0, sticky = "nsew", padx = 10, pady = 5)
 
-        self.stop_button = tk.Button(root, text="Stop Server", command=self.stop_server, state=tk.DISABLED)
-        self.stop_button.grid(row=6, column=1)
+        self.stop_button = tk.Button(root, text="Stop Server", command=self.stop_server, state=tk.DISABLED, font = self.default_font)
+        self.stop_button.grid(row=6, column=1, sticky = "nsew", padx = 10, pady = 5)
 
     def default_key(self, i):
         return ["left", "up", "right", "down", "space"][i - 1]
