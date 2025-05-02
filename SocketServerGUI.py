@@ -8,8 +8,9 @@ class SocketServerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Socket Server Control")
-        self.root.geometry("700x500")  # Initial size
+        self.root.geometry("800x500")  # Initial size
 
+        # Define the d-pad names (used to label the keybinding inputs)
         self.keyLabels = ["Left", "Up", "Right", "Down", "Center"]
 
         self.server_thread = None
@@ -23,12 +24,14 @@ class SocketServerApp:
         for j in range(2):  
             root.grid_columnconfigure(j, weight=1, uniform = "col")
 
-        # Set font
+        # Set font parameters
         self.default_font = tkFont.Font(family="Helvetica", size=14)
 
+        # Labels
+        # Keybinding 
         self.key_inputs = {}
-        for i in range(0, 5):
-            keyLabel = self.keyLabels[i]
+        for i in range(1, 6):
+            keyLabel = self.keyLabels[i-1]
             
             label = tk.Label(root, text=f"{keyLabel} Key:", font = self.default_font)
             label.grid(row = i, column = 0, sticky = "nsew", padx = 10, pady = 5)
@@ -37,12 +40,18 @@ class SocketServerApp:
             entry.insert(0, self.default_key(i))
             entry.grid(row = i, column = 1, sticky = "nsew", padx = 10, pady = 5)            
             self.key_inputs[str(i)] = entry
-
+        # Title
+        title_label = tk.Label(root, text="Socket Server Controller", font=("Helvetica", 18, "bold"))
+        title_label.grid(row=0, column=0, columnspan=2, pady=(15, 10), sticky="n")
+        
+        # Server buttons
         self.start_button = tk.Button(root, text="Start Server", command=self.start_server, font = self.default_font)
         self.start_button.grid(row=6, column=0, sticky = "nsew", padx = 10, pady = 5)
 
         self.stop_button = tk.Button(root, text="Stop Server", command=self.stop_server, state=tk.DISABLED, font = self.default_font)
         self.stop_button.grid(row=6, column=1, sticky = "nsew", padx = 10, pady = 5)
+
+        
 
     def default_key(self, i):
         return ["left", "up", "right", "down", "space"][i - 1]
