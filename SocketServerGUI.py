@@ -20,7 +20,7 @@ class SocketServerApp:
         self.client = None
 
         # Make entire grid expandable
-        for i in range(7):
+        for i in range(8):
             root.grid_rowconfigure(i, weight=1)
         for j in range(2):  
             root.grid_columnconfigure(j, weight=1, uniform = "col")
@@ -46,11 +46,20 @@ class SocketServerApp:
         title_label.grid(row=0, column=0, columnspan=2, pady=(15, 10), sticky="n")
         
         # Server buttons
-        self.start_button = tk.Button(root, text="Start Server", command=self.start_server, font = self.default_font)
-        self.start_button.grid(row=6, column=0, sticky = "nsew", padx = 10, pady = 5)
+        #self.start_button = tk.Button(root, text="Start Server", command=self.start_server, font = self.default_font)
+        #self.start_button.grid(row=6, column=0, sticky = "nsew", padx = 10, pady = 5)
 
-        self.stop_button = tk.Button(root, text="Stop Server", command=self.stop_server, state=tk.DISABLED, font = self.default_font)
-        self.stop_button.grid(row=6, column=1, sticky = "nsew", padx = 10, pady = 5)
+        #self.stop_button = tk.Button(root, text="Stop Server", command=self.stop_server, state=tk.DISABLED, font = self.default_font)
+        #self.stop_button.grid(row=6, column=1, sticky = "nsew", padx = 10, pady = 5)
+
+
+        self.start_button = tk.Button(root, text="Start Server", font=self.default_font, command=self.start_server)
+        self.stop_button = tk.Button(root, text="Stop Server", font=self.default_font, command=self.stop_server)
+        self.quit_button = tk.Button(root, text="Quit App", font=self.default_font, command=self.quit_app)
+
+        self.start_button.grid(row=6, column=0, sticky="nsew", padx=5)
+        self.stop_button.grid(row=6, column=1, sticky="nsew", padx=5)
+        self.quit_button.grid(row=7, column=0, columnspan = 2, sticky="nsew", padx=5)
 
     def get_keybindings(self):
         mapping = {}
@@ -130,6 +139,12 @@ class SocketServerApp:
         pydin.keyUp(pressed_key)
         self.stop_server()
 
+    def quit_app(self):
+        print("Quitting application...")
+        self.stop_server()
+        self.stop_event.set()
+        self.root.destroy()
+        
 if __name__ == "__main__":
     root = tk.Tk()
     app = SocketServerApp(root)
