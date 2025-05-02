@@ -12,6 +12,7 @@ class SocketServerApp:
 
         # Define the d-pad names (used to label the keybinding inputs)
         self.keyLabels = ["Left", "Up", "Right", "Down", "Center"]
+        self.defaultKeys = ["left", "up", "right", "down", "space"]
 
         self.server_thread = None
         self.running = False
@@ -37,7 +38,7 @@ class SocketServerApp:
             label.grid(row = i, column = 0, sticky = "nsew", padx = 10, pady = 5)
             
             entry = tk.Entry(root, font = self.default_font)
-            entry.insert(0, self.default_key(i))
+            entry.insert(0, self.defaultKeys[i-1])
             entry.grid(row = i, column = 1, sticky = "nsew", padx = 10, pady = 5)            
             self.key_inputs[str(i)] = entry
         # Title
@@ -50,11 +51,6 @@ class SocketServerApp:
 
         self.stop_button = tk.Button(root, text="Stop Server", command=self.stop_server, state=tk.DISABLED, font = self.default_font)
         self.stop_button.grid(row=6, column=1, sticky = "nsew", padx = 10, pady = 5)
-
-        
-
-    def default_key(self, i):
-        return ["left", "up", "right", "down", "space"][i - 1]
 
     def get_keybindings(self):
         mapping = {}
