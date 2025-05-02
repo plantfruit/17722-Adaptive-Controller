@@ -3,18 +3,20 @@ import tkinter.font as tkFont
 from threading import Thread
 import socket
 import pydirectinput as pydin
+import threading
 
 class SocketServerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Socket Server Control")
         self.root.geometry("800x500")  # Initial size
+        self.stop_event = threading.Event()
+        self.server_thread = None
 
         # Define the d-pad names (used to label the keybinding inputs)
         self.keyLabels = ["Left", "Up", "Right", "Down", "Center"]
         self.defaultKeys = ["left", "up", "right", "down", "space"]
 
-        self.server_thread = None
         self.running = False
         self.server = None
         self.client = None
